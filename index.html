@@ -796,28 +796,26 @@
               </div>
             </li>
             <li class="blog-post-item">
-              <div class="blog-link" onclick="showBlogDetail(
-            'OS Fingerprinting : Ce que le TTL révèle de vos cibles', 
-            './assets/images/ttl-explainer.png', 
-            '🚀 Un simple TTL peut révéler bien plus que ce qu’on imagine !<br><br>En travaillant sur mes projets, j’ai remarqué un détail qu’on ignore souvent : le <b>TTL (Time To Live)</b>.<br><br>Chaque système d’exploitation commence avec une valeur différente :<br>• <b>Windows</b> → 128<br>• <b>Linux/Debian</b> → 64<br>• <b>Routeurs Cisco</b> → 255<br><br>En regardant le TTL reçu, on peut deviner le type de machine et sa distance !<br><br>🔎 <b>Exemple d\'interprétation :</b><br>Si je reçois un paquet avec <b>TTL=117</b>, il vient probablement de Windows (128 - 117 = 11 sauts).<br>Si je reçois <b>TTL=57</b>, c’est un Linux (64 - 57 = 7 sauts).', 
-            'Réseaux, Cybersécurité, Pentest',
-            true // On ajoute un paramètre pour dire qu'il y a une galerie d'images
-          )">
-                <figure class="blog-banner-box">
-                  <img src="./assets/images/img-ping1.png" alt="TTL Networking" loading="lazy">
-                </figure>
-                <div class="blog-content">
-                  <div class="blog-meta">
-                    <p class="blog-category">Cybersécurité</p>
-                    <span class="dot"></span>
-                    <time datetime="2026-02-13">13 Fév, 2026</time>
-                  </div>
-                  <h3 class="h3 blog-item-title">Le TTL : La carte d'identité cachée des systèmes</h3>
-                  <p class="blog-text">Découvrez comment identifier un OS (Windows, Linux, Cisco) simplement avec une
-                    commande Ping...</p>
-                </div>
-              </div>
-            </li>
+  <div class="blog-link" onclick="showBlogDetail(
+    'OS Fingerprinting : Ce que le TTL révèle de vos cibles', 
+    './assets/images/img-ping1.png', 
+    '🚀 Un simple TTL peut révéler bien plus que ce qu on imagine !<br><br>En travaillant sur mes projets, j ai remarqué un détail qu on ignore souvent : le <b>TTL (Time To Live)</b>.<br><br>Chaque système d exploitation commence avec une valeur différente :<br>• <b>Windows</b> → 128<br>• <b>Linux/Debian</b> → 64<br>• <b>Routeurs Cisco</b> → 255<br><br>En regardant le TTL reçu, on peut deviner le type de machine et sa distance !<br><br>🔎 <b>Exemple d interprétation :</b><br>Si je reçois un paquet avec <b>TTL=117</b>, il vient probablement de Windows (128 - 117 = 11 sauts).<br>Si je reçois <b>TTL=57</b>, c est un Linux (64 - 57 = 7 sauts).', 
+    'Réseaux, Cybersécurité, Pentest'
+  )">
+    <figure class="blog-banner-box">
+      <img src="./assets/images/img-ping1.png" alt="TTL Networking" loading="lazy">
+    </figure>
+    <div class="blog-content">
+      <div class="blog-meta">
+        <p class="blog-category">Cybersécurité</p>
+        <span class="dot"></span>
+        <time datetime="2026-02-13">13 Fév, 2026</time>
+      </div>
+      <h3 class="h3 blog-item-title">Le TTL : La carte d'identité cachée des systèmes</h3>
+      <p class="blog-text">Découvrez comment identifier un OS (Windows, Linux, Cisco) simplement avec une commande Ping...</p>
+    </div>
+  </div>
+</li>
 
           </ul>
         </section>
