@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Abdallah Mannai - Portfolio</title>
+
+  <link rel="shortcut icon" href="./assets/images/logo.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="./assets/css/style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+</head>
+
+<!-- FIREBASE + WIDGET ETOILES -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBzGP9SiDkg-XmaM4JFEG0StBg2dpdfU1I",
+    authDomain: "portfolio-visiteur.firebaseapp.com",
+    projectId: "portfolio-visiteur",
+    storageBucket: "portfolio-visiteur.firebasestorage.app",
+    messagingSenderId: "773465610447",
+    appId: "1:773465610447:web:2f0ca3bf9bf087d7927fba",
+    measurementId: "G-07048TH3TP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function loadRating() {
+    try {
+      const ref = doc(db, "siteStats", "rating");
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        const avg = data.total / data.count;
+        document.getElementById("rating-avg").textContent = avg.toFixed(1);
+        document.getElementById("rating-count").textContent = data.count;
+        const myVote = localStorage.getItem("myVote");
+        if (myVote) highlightStars(parseInt(myVote));
+        else highlightStars(Math.round(avg));
+      }
+    } catch(e) { console.log("Firebase error:", e); }
+  }
+
+  window.submitRating = async function(stars) {
+    if (localStorage.getItem("hasVoted")) {
+      document.getElementById("rating-msg").textContent = "Vous avez déjà voté ! Merci 😊";
+      return;
+    }
+    try {
+      const ref = doc(db, "siteStats", "rating");
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        await updateDoc(ref, { total: increment(stars), count: increment(1) });
+      } else {
+        await setDoc(ref, { total: stars, count: 1 });
+      }
+      localStorage.setItem("hasVoted", "true");
+      localStorage.setItem("myVote", stars);
+      document.getElementById("rating-msg").textContent = `Merci pour votre ${stars}⭐ !`;
+      highlightStars(stars);
+      loadRating();
+    } catch(e) {
+      document.getElementById("rating-msg").textContent = "Erreur, réessayez.";
+    }
+  }
+
+  function highlightStars(n) {
+    document.querySelectorAll(".star-btn").forEach((s, i) => {
+      s.classList.toggle("active", i < n);
+    });
+  }
+
+  document.querySelectorAll(".star-btn").forEach((s, i) => {
+    s.addEventListener("mouseenter", () => {
+      document.querySelectorAll(".star-btn").forEach((s2, j) => {
+        s2.classList.toggle("hovered", j <= i);
+      });
+    });
+    s.addEventListener("mouseleave", () => {
+      document.querySelectorAll(".star-btn").forEach(s2 => s2.classList.remove("hovered"));
+    });
+  });
+
+  loadRating();
+</script>
+
+
+
+<body class="dark-theme">
+
+  <video autoplay muted loop playsinline id="bg-video-dark" class="bg-video active-video">
+    <source src="./assets/images/background-dark.mp4" type="video/mp4">
+  </video>
+  <video autoplay muted loop playsinline id="bg-video-light" class="bg-video">
+    <source src="./assets/images/background-light.mp4" type="video/mp4">
+  </video>
+
+  <div class="controls">
+    <div class="controls-pill">
+      <button class="lang-btn active" id="lang-fr">🇫🇷</button>
+      <div class="lang-divider"></div>
+      <button class="lang-btn" id="lang-en">🇬🇧</button>
+    </div>
+    <div class="controls-pill">
+      <button class="control-btn" id="theme-toggle">🌙</button>
+    </div>
+  </div>
+
+  <main>
+    <aside class="sidebar" data-sidebar>
+      <div class="sidebar-info">
+        <figure class="avatar-box">
+          <img src="./assets/images/taswirti.jpg" alt="Mannai Abdallah" width="80">
+        </figure>
+        <div class="info-content">
+          <h1 class="name" title="Mannai Abdallah">Mannai Abdallah</h1>
+          <p class="title" data-i18n="sidebar.role">Étudiant en Cybersécurité</p>
+        </div>
+        <button class="info_more-btn" data-sidebar-btn>
+          <span data-i18n="sidebar.showContacts">Afficher les contacts</span>
+          <ion-icon name="chevron-down"></ion-icon>
+        </button>
+      </div>
+
+      <div class="sidebar-info_more">
+        <div class="separator"></div>
+        <ul class="contacts-list">
+          <li class="contact-item">
+            <div class="icon-box"><ion-icon name="mail-outline"></ion-icon></div>
+            <div class="contact-info">
+              <p class="contact-title" data-i18n="sidebar.email">Email</p>
+              <a href="mailto:abdallah.mannai@etu.univ-st-etienne.fr"
+                class="contact-link">abdallah.mannai@etu.univ-st-etienne.fr</a>
+            </div>
+          </li>
+          <li class="contact-item">
+            <div class="icon-box"><ion-icon name="phone-portrait-outline"></ion-icon></div>
+            <div class="contact-info">
+              <p class="contact-title" data-i18n="sidebar.phone">Téléphone</p>
+              <a href="tel:+33615324767" class="contact-link">+33 6 15 32 47 67</a>
+            </div>
+          </li>
+          <li class="contact-item">
+            <div class="icon-box"><ion-icon name="location-outline"></ion-icon></div>
+            <div class="contact-info">
+              <p class="contact-title" data-i18n="sidebar.location">Localisation</p>
+              <address>Roanne, France</address>
+            </div>
+          </li>
+        </ul>
+        <div class="separator"></div>
+        <ul class="social-list">
+          <li class="social-item"><a href="https://www.linkedin.com/in/abdallah-mannai/" class="social-link"
+              target="_blank"><ion-icon name="logo-linkedin"></ion-icon></a></li>
+          <li class="social-item"><a href="https://github.com/Abdallah-Mannai" class="social-link"
+              target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+          <li class="social-item"><a href="https://www.instagram.com/___ab.dou____/" class="social-link"
+              target="_blank"><ion-icon name="logo-instagram"></ion-icon></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <nav class="navbar">
+        <ul class="navbar-list">
+          <li class="navbar-item"><button class="navbar-link active" data-nav-link
+              data-i18n="navbar.about">About</button></li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link data-i18n="navbar.resume">Resume</button>
+          </li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link
+              data-i18n="navbar.portfolio">Portfolio</button></li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link data-i18n="navbar.blog">Blog</button></li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link data-i18n="navbar.contact">Contact</button>
+          </li>
+        </ul>
+      </nav>
+
+      <article class="about active" data-page="about">
+        <header>
+          <h2 class="h2 article-title" data-i18n="about.title"></h2>
+        </header>
+        <section class="about-text">
+          <p data-i18n="about.description1"></p>
+          <p data-i18n="about.description2"></p>
+        </section>
+        <section class="service">
+          <h3 class="h3 service-title" data-i18n="about.whatIdo"></h3>
+          <ul class="service-list">
+            <li class="service-item">
+              <div class="service-icon-box"><img
+                  src="./assets/images/network_society_communication_online_chat_icon_143342.png" alt="icon" width="40">
+              </div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title" data-i18n="services.network.title"></h4>
+                <p class="service-item-text" data-i18n="services.network.text"></p>
+              </div>
+            </li>
+            <li class="service-item">
+              <div class="service-icon-box"><img
+                  src="./assets/images/4014703-driver-mobile-phone-repair-screw-service-wrench_112878.png" alt="icon"
+                  width="40"></div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title" data-i18n="services.system.title"></h4>
+                <p class="service-item-text" data-i18n="services.system.text"></p>
+              </div>
+            </li>
+            <li class="service-item">
+              <div class="service-icon-box"><img src="./assets/images/cloud_hacker_icon_175845.png" alt="icon"
+                  width="40"></div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title" data-i18n="services.security.title"></h4>
+                <p class="service-item-text" data-i18n="services.security.text"></p>
+              </div>
+            </li>
+            <li class="service-item">
+              <div class="service-icon-box"><img
+                  src="./assets/images/development_desktop_device_screen_technology_computer_programming_coding_code_icon_212648.png"
+                  alt="icon" width="40"></div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title" data-i18n="services.dev.title"></h4>
+                <p class="service-item-text" data-i18n="services.dev.text"></p>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </article>
+
+      <article class="resume" data-page="resume">
+        <header>
+          <h2 class="h2 article-title" data-i18n="resume.title"></h2>
+        </header>
+
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="book-outline"></ion-icon></div>
+            <h3 class="h3" data-i18n="resume.education"></h3>
+          </div>
+          <ol class="timeline-list">
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.edu1.title"></h4>
+              <span data-i18n="resume.edu1.year"></span>
+              <p class="timeline-text" data-i18n="resume.edu1.text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.edu2.title"></h4>
+              <span data-i18n="resume.edu2.year"></span>
+              <p class="timeline-text" data-i18n="resume.edu2.text"></p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="briefcase-outline"></ion-icon></div>
+            <h3 class="h3" data-i18n="resume.tech_title"></h3>
+          </div>
+          <ol class="timeline-list">
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.tech1.title"></h4>
+              <span data-i18n="resume.tech1.year"></span>
+              <p class="timeline-text" data-i18n="resume.tech1.text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.tech2.title"></h4>
+              <span data-i18n="resume.tech2.year"></span>
+              <p class="timeline-text" data-i18n="resume.tech2.text"></p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="person-outline"></ion-icon></div>
+            <h3 class="h3" data-i18n="resume.jobs_title"></h3>
+          </div>
+          <ol class="timeline-list">
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.job1.title"></h4>
+              <span data-i18n="resume.job1.year"></span>
+              <p class="timeline-text" data-i18n="resume.job1.text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.job2.title"></h4>
+              <span data-i18n="resume.job2.year"></span>
+              <p class="timeline-text" data-i18n="resume.job2.text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.job3.title"></h4>
+              <span data-i18n="resume.job3.year"></span>
+              <p class="timeline-text" data-i18n="resume.job3.text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.conf.title"></h4>
+              <span data-i18n="resume.conf.year"></span>
+              <p class="timeline-text" data-i18n="resume.conf.text"></p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="bulb-outline"></ion-icon></div>
+            <h3 class="h3" data-i18n="resume.soft_title"></h3>
+          </div>
+          <ol class="timeline-list">
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.soft.s1_title"></h4>
+              <p class="timeline-text" data-i18n="resume.soft.s1_text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.soft.s2_title"></h4>
+              <p class="timeline-text" data-i18n="resume.soft.s2_text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.soft.s3_title"></h4>
+              <p class="timeline-text" data-i18n="resume.soft.s3_text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.soft.s4_title"></h4>
+              <p class="timeline-text" data-i18n="resume.soft.s4_text"></p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title" data-i18n="resume.soft.s5_title"></h4>
+              <p class="timeline-text" data-i18n="resume.soft.s5_text"></p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="skill">
+          <h3 class="h3 skills-title" data-i18n="resume.skills"></h3>
+          <ul class="skills-list content-card">
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">Réseaux & Virtualisation</h5><data value="85">85%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 85%;"></div>
+              </div>
+            </li>
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">Développement Fullstack</h5><data value="90">90%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 90%;"></div>
+              </div>
+            </li>
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">Cybersécurité</h5><data value="70">70%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 70%;"></div>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="ribbon-outline"></ion-icon></div>
+            <h3 class="h3" data-i18n="resume.certs"></h3>
+          </div>
+          <ul class="timeline-list">
+            <li class="timeline-item">
+              <h5 class="h5">Certifications</h5>
+              <p class="timeline-text">• SecNumAcadémie (ANSSI)<br>• Cisco CyberOps Associate (En cours)<br>• Cisco CCNA
+                (En cours)</p>
+            </li>
+            <li class="timeline-item">
+              <h5 class="h5">Langues</h5>
+              <p class="timeline-text">• Français (TCF C1)<br>• Anglais (TOEIC C1)<br>• Espagnol (SIELE B1)</p>
+            </li>
+          </ul>
+        </section>
+        <div class="cv-download-wrapper">
+          <a href="./assets/files/CV_2026-03-19_Abdallah_Mannai final.pdf" download class="cv-download-btn">
+            <ion-icon name="download-outline"></ion-icon>
+            <span data-i18n="resume.downloadCV">Télécharger mon CV</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="portfolio" data-page="portfolio">
+
+        <header>
+          <h2 class="h2 article-title" data-i18n="portfolio.title">Portfolio</h2>
+        </header>
+
+        <div id="portfolio-grid-view">
+          <section class="projects">
+
+            <ul class="filter-list">
+              <li class="filter-item"><button class="active" data-filter-btn
+                  data-i18n="portfolio.filter.all">Tout</button></li>
+              <li class="filter-item"><button data-filter-btn data-i18n="portfolio.filter.projects">Projets</button>
+              </li>
+              <li class="filter-item"><button data-filter-btn data-i18n="portfolio.filter.certs">Certifs</button></li>
+              <li class="filter-item"><button data-filter-btn data-i18n="portfolio.filter.cyber">Cyber</button></li>
+              <li class="filter-item"><button data-filter-btn data-i18n="portfolio.filter.network">Réseaux</button></li>
+              <li class="filter-item"><button data-filter-btn data-i18n="portfolio.filter.system">Systèmes</button></li>
+            </ul>
+
+            <ul class="project-list">
+
+  <!-- CISCO NETWORK TECH -->
+  <li class="project-item active" data-filter-item data-category="certifications">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "Cisco Network Technician",
+      "Certification validant les compétences de technicien réseau : configuration d équipements, protocoles de routage, commutation et dépannage réseau professionnel.",
+      [
+        { src: "./assets/images/certification-path-away.png", caption: "Certification Cisco Network Technician" },
+        
+        
+      ],
+      "Réseaux, Cisco, Switching, Routing"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="ribbon-outline"></ion-icon></div>
+        <img src="./assets/images/certification-path-away.png" alt="Cisco Network Technician" loading="lazy">
+      </figure>
+      <h3 class="project-title">Cisco Network Tech</h3>
+      <p class="project-category" data-i18n="portfolio.filter.certs">Certification</p>
+    </div>
+  </li>
+
+  <!-- CISCO PACKET TRACER -->
+  <li class="project-item active" data-filter-item data-category="certifications">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "Cisco Packet Tracer",
+      "Maîtrise de l outil de simulation Cisco Packet Tracer pour la conception, la configuration et la simulation de topologies réseaux complexes.",
+      [
+        { src: "./assets/images/certificat-cisco-packet-tracer.png", caption: "Certificat Cisco Packet Tracer" },
+      
+
+      ],
+      "Simulation, Cisco, Topologie Réseau"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="hardware-chip-outline"></ion-icon></div>
+        <img src="./assets/images/certificat-cisco-packet-tracer.png" alt="Cisco Packet Tracer" loading="lazy">
+      </figure>
+      <h3 class="project-title">Packet Tracer Expert</h3>
+      <p class="project-category" data-i18n="portfolio.filter.certs">Certification</p>
+    </div>
+  </li>
+
+  <!-- VLSM CALCULATOR -->
+  <li class="project-item active" data-filter-item data-category="networks">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "VLSM Calculator",
+      "Application multiplateforme conçue pour simplifier l adressage IP complexe. L utilisateur entre une adresse réseau et ses besoins, et l app génère instantanément un plan complet exportable en PDF.",
+      [
+        { src: "./assets/images/vlsm-preview.png", caption: "Interface VLSM Calculator" },
+       
+      ],
+      "Flutter, Dart, Inno Setup, Planification IP",
+      "https://lnkd.in/eh9QAvab",
+      "./assets/video/vlsm-demo.mp4"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="play-circle-outline"></ion-icon></div>
+        <img src="./assets/images/vlsm-preview.png" alt="VLSM Calculator" loading="lazy">
+      </figure>
+      <h3 class="project-title">VLSM Calculator</h3>
+      <p class="project-category" data-i18n="portfolio.filter.projects">Projet Web/Mobile</p>
+    </div>
+  </li>
+
+  <!-- SECNUMACADEMIE -->
+  <li class="project-item active" data-filter-item data-category="certifications">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SecNumAcadémie - ANSSI",
+      "Certification obtenue auprès de l ANSSI couvrant les fondamentaux de la cybersécurité : sécurité du poste de travail, authentification, web et hygiène informatique.",
+      [
+        { src: "./assets/images/secnumacademi-cert.png", caption: "Certificat SecNumAcadémie ANSSI" },
+       
+      ],
+      "Cybersécurité, ANSSI, SecNum"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
+        <img src="./assets/images/secnumacademi-cert.png" alt="SecNumAcadémie" loading="lazy">
+      </figure>
+      <h3 class="project-title">SecNumAcadémie</h3>
+      <p class="project-category" data-i18n="portfolio.filter.certs">Certification</p>
+    </div>
+  </li>
+
+  <!-- INFRASTRUCTURE ENTREPRISE -->
+  <li class="project-item active" data-filter-item data-category="networks">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SAÉ 3.Cyber.03 — Infrastructure Entreprise Complète",
+      "Projet complet de déploiement d une <strong>infrastructure d entreprise virtualisée</strong> de bout en bout, couvrant 6 domaines techniques.<br><br><strong>🖥️ Virtualisation (vSphere/vCenter)</strong><br>Déploiement de VMs sous VMware vCenter (Windows Server 2016 + Ubuntu 22.04), disques Thin, contrôleur PVSCSI, NIC VMXNET3, VMware Tools.<br><br><strong>🪪 Active Directory & DNS</strong><br>Promotion en contrôleur de domaine <em>etu37.sae</em>, configuration AD DS + DNS intégré, OUs, groupes (GG-WiFi-Employees), utilisateurs de test, redirecteurs DNS.<br><br><strong>🌐 Serveur Web HTTPS (Nginx)</strong><br>Déploiement Ubuntu + Nginx en HTTPS avec certificats SSL auto-signés (SAN), pare-feu UFW, redirection HTTP→HTTPS. Résolution du blocage UFW sur les ports 80/443.<br><br><strong>🔀 Topologie réseau (OSPF/VLAN)</strong><br>Architecture multi-routeurs (R-HEAD, R-LAN, SW-L3), routage dynamique OSPF, segmentation VLAN, adressage complet documenté.<br><br><strong>📶 Wi-Fi Entreprise 802.1X</strong><br>SSID ENTREPRISE en WPA2-Enterprise, PEAP-MSCHAPv2, NPS sur Windows Server, VLAN 98 (172.32.98.0/24).<br><br><strong>📊 Supervision Zabbix</strong><br>Monitoring temps réel, triggers (ping, port 443, nginx, DNS/53), détection Problem → Resolved.",
+      [
+        { src: "./assets/images/infra1.jpg", caption: "Topologie Réseau & Infrastructure" },
+        { src: "./assets/images/infra2.jpg", caption: "Virtualisation vSphere/vCenter" },
+        { src: "./assets/images/infra3.jpg", caption: "Configuration Active Directory" },
+        { src: "./assets/images/zabbix1.png", caption: "Supervision Zabbix" },
+        { src: "./assets/images/web1.jpg", caption: "Serveur Web Nginx HTTPS" },
+        { src: "./assets/images/wifi.jpg", caption: "Wi-Fi Entreprise 802.1X" }
+      ],
+      "vSphere, Windows Server, Ubuntu, AD DS, DNS, Nginx, HTTPS, UFW, OSPF, VLAN, RADIUS, NPS, 802.1X, Zabbix",
+      ""
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="server-outline"></ion-icon></div>
+        <img src="./assets/images/infra1.jpg" alt="Infrastructure Entreprise" loading="lazy">
+      </figure>
+      <h3 class="project-title">Infrastructure Entreprise Complète</h3>
+      <p class="project-category">Projet Réseau & Systèmes</p>
+    </div>
+  </li>
+
+  <!-- MESHTASTIC -->
+  <li class="project-item active" data-filter-item data-category="networks">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SAÉ 3.01 — Réseau Mesh Meshtastic (LoRa)",
+      "Dans le cadre de la SAÉ 3.01, j ai déployé un <strong>réseau maillé (Mesh) autonome sans Internet</strong> à l aide de la technologie <strong>LoRa</strong> et du firmware open-source <strong>Meshtastic</strong>.<br><br>Le projet consistait à configurer <strong>3 cartes SenseCAP T1000E</strong> (GPS intégré, Bluetooth, batterie) pour former un réseau mesh décentralisé : chaque nœud envoie ses données <em>et</em> relaie celles des autres, sans serveur ni gateway central.<br><br><strong>Ce que j ai réalisé :</strong><br>• Configuration des paramètres radio LoRa (région EU_868, conformité réglementaire France)<br>• Mise en place d un channel chiffré commun (<em>IUT-MESH</em>) avec clé partagée sur les 3 cartes<br>• Désignation d un nœud routeur (passerelle mesh) pour relayer via LoRa sans Bluetooth<br>• Partage de positions GPS en temps réel depuis un seul smartphone via l app Meshtastic<br>• Tests de portée et validation de la communication sécurisée inter-nœuds<br><br><strong>Résultat :</strong> Infrastructure de communication résiliente, sans dépendance réseau, opérationnelle sur le campus de l IUT.",
+      [
+        
+        { src: "./assets/images/mesh1.jpg", caption: "Réseau Mesh LoRa" },
+        { src: "./assets/images/mesh2.jpg", caption: "Cartes SenseCAP T1000E" },
+        { src: "./assets/images/sensecap.jpg", caption: "Configuration SenseCAP GPS" }
+      ],
+      "LoRa, LoRaWAN, Meshtastic, SenseCAP T1000E, GPS, Réseau Mesh, RF EU_868"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="radio-outline"></ion-icon></div>
+        <img src="./assets/images/Meshtastic 101.jpg" alt="Réseau Mesh Meshtastic" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">Réseau Mesh Meshtastic</h3>
+      <p class="project-category">Projet Réseaux · LoRa</p>
+    </div>
+  </li>
+
+  <!-- VOIP -->
+  <li class="project-item active" data-filter-item data-category="networks">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "TP4 — Téléphonie IP Cloud (FusionPBX sur AWS)",
+      "Déploiement complet d une <strong>infrastructure de téléphonie IP professionnelle</strong> hébergée sur le cloud AWS, en utilisant <strong>FusionPBX</strong> (basé sur FreeSWITCH) comme solution IPBX avancée.<br><br><strong>☁️ Infrastructure AWS</strong><br>Création et configuration d une instance EC2 Ubuntu Server 22.04 (t3.micro), gestion des règles de sécurité (ports SIP/RTP), Elastic IP, volume 20Go, connexion SSH avec clé .pem.<br><br><strong>⚙️ Installation FusionPBX</strong><br>Déploiement via Docker (docker.io + docker-compose), configuration FreeSWITCH, serveur web, bases de données et modules téléphonie. Résolution d un problème de permissions SSH sous PowerShell.<br><br><strong>📞 Fonctionnalités VoIP configurées</strong><br>• Extensions SIP pour chaque utilisateur (201, 202, 203)<br>• SDA directs (numéros publics)<br>• IVR (serveur vocal interactif) avec redirections d appel<br>• Time Conditions (messages différents selon horaires d ouverture / vacances)<br>• Répondeur (voicemail) en cas d absence<br>• Envoi de fichiers audio IVR vers AWS S3 puis FreeSWITCH<br><br><strong>✅ Compétences acquises</strong><br>Maîtrise complète du déploiement VoIP cloud : AWS EC2, FusionPBX, FreeSWITCH, flux SIP/RTP, sécurité VoIP.",
+      [
+        
+        { src: "./assets/images/voip2.jpg", caption: "Dashboard FusionPBX" },
+        { src: "./assets/images/voip1.jpg", caption: "AWS Cloud" },
+       
+      ],
+      "AWS EC2, FusionPBX, FreeSWITCH, Docker, SIP, RTP, IVR, VoIP, Ubuntu Server"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="call-outline"></ion-icon></div>
+        <img src="./assets/images/voip1.jpg" alt="Téléphonie IP Cloud" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">Téléphonie IP Cloud</h3>
+      <p class="project-category">Projet Réseaux · VoIP</p>
+    </div>
+  </li>
+
+  <!-- SAMBA4 DOCKER -->
+  <li class="project-item active" data-filter-item data-category="systems">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "Active Directory Samba4 sous Docker",
+      "Simulation d une <strong>infrastructure Active Directory complète</strong> via Samba4 dans un environnement Docker, avec automatisation complète par script PowerShell.<br><br><strong>🐳 Infrastructure Docker</strong><br>Création d un réseau Docker personnalisé (192.168.23.0/24), lancement d un conteneur Ubuntu privilégié avec volumes persistants (samba_etc, samba_lib, samba_cache, samba_log).<br><br><strong>🪪 Contrôleur de domaine Samba4</strong><br>Installation et provisionnement de Samba4 comme contrôleur de domaine AD (ADDC), configuration Kerberos (REALM RT-LOCAL.LOCAL), domaine RTLOCAL, DNS backend interne.<br><br><strong>👥 Gestion des utilisateurs & groupes</strong><br>Création de 3 groupes (direction, administration, production) et des utilisateurs associés via samba-tool, avec attributs complets (nom, email, shell).<br><br><strong>📁 Partages réseau sécurisés</strong><br>6 répertoires de partage avec permissions fines :<br>• /partage/dir → direction uniquement<br>• /partage/public → lecture/écriture pour tous<br>• /partage/dir-adm → écriture direction, lecture administration<br>• /partage/dir-pro → lecture direction/production, écriture CEO uniquement<br><br><strong>⚡ Automatisation PowerShell</strong><br>Tout le déploiement est automatisé via un script PS1 : création réseau, lancement conteneur, installation Samba, provisionnement domaine, création groupes/utilisateurs/partages.",
+      [
+        { src: "./assets/images/wp2.jpg", caption: "Infrastructure Docker & Samba4" },
+        { src: "./assets/images/samba2.png", caption: "Active Directory & Kerberos" },
+        
+      ],
+      "Docker, Samba4, Active Directory, Kerberos, PowerShell, Ubuntu, SMB, Linux"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="terminal-outline"></ion-icon></div>
+        <img src="./assets/images/wp2.jpg" alt="Samba4 AD Docker" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">Active Directory Samba4 & Docker</h3>
+      <p class="project-category">Projet Systèmes · Automatisation</p>
+    </div>
+  </li>
+
+  <!-- ART ALGORITHMIQUE -->
+  <li class="project-item active" data-filter-item data-category="projects">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SAÉ 2.04 — Art Algorithmique (Python/Pygame)",
+      "Projet d art algorithmique en deux parties : reproduction d une œuvre existante et création d une œuvre personnelle, le tout en <strong>Python avec Pygame</strong>.<br><br><strong>🎨 Reproduction d œuvre — Lentille Colorée</strong><br>Reproduction algorithmique d une lentille colorée abstraite via des <strong>courbes de Bézier quadratiques</strong>. Le programme génère 60 courbes entre 4 points d ancrage (haut/bas gauche-droite) avec des points de contrôle sinusoïdaux créant une courbure dynamique. Interpolation de couleurs fluide entre 10 teintes vives (rouge, vert, bleu, cyan, magenta...). Mode symétrique activable avec la touche ESPACE.<br><br><strong>🖊️ Œuvre personnelle — I.U.T ROANNE</strong><br>Création d une œuvre originale formant le texte <em>IUT ROANNE</em> en lettres construites algorithmiquement. Chaque lettre est décomposée en segments (points de départ/arrivée), puis chaque segment est dessiné avec 8 courbes de Bézier colorées avec variations sinusoïdales des points de contrôle.<br><br><strong>⚙️ Concepts mathématiques utilisés</strong><br>• Courbes de Bézier quadratiques : P(t) = (1-t)²P0 + 2(1-t)tP1 + t²P2<br>• Interpolation linéaire de couleurs RGB<br>• Fonctions trigonométriques (sin/cos) pour les variations de courbure<br>• Épaisseur variable selon la progression",
+      [
+        { src: "./assets/images/art-algo-preview.png", caption: "Œuvre Algorithmique IUT ROANNE" },
+     
+        { src: "./assets/images/art2.jpg", caption: "Courbes de Bézier & Python" }
+      ],
+      "Python, Pygame, Courbes de Bézier, Algorithmique, Art Génératif, Mathématiques"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="color-palette-outline"></ion-icon></div>
+        <img src="./assets/images/art-algo-preview.png" alt="Art Algorithmique" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">Art Algorithmique Python</h3>
+      <p class="project-category">Projet · Python & Maths</p>
+    </div>
+  </li>
+
+  <!-- NETSPECTOR -->
+  <li class="project-item active" data-filter-item data-category="cybersecurity">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SAÉ 1.05 — Analyseur de Trames Réseau (NetSpector)",
+      "Développement d un <strong>outil d analyse de sécurité réseau</strong> en Python avec interface graphique Tkinter, capable d analyser des fichiers de capture réseau (type Wireshark/tcpdump).<br><br><strong>🖥️ Interface graphique (Tkinter)</strong><br>Application desktop complète (1200x800) avec barre de progression, sélection de fichier, affichage scrollable des résultats et visualisation graphique via Matplotlib intégré.<br><br><strong>🔍 Analyse de protocoles</strong><br>Détection automatique par expressions régulières de 16 protocoles : TCP, UDP, ICMP, HTTP/HTTPS, DNS, SSH, FTP, SMTP, POP3, IMAP, TELNET, RDP, SMB, NTP, SNMP.<br><br><strong>🛡️ Détection d attaques</strong><br>Signatures d attaques intégrées :<br>• SYN Flood (détection via pattern TCP win 512/1024)<br>• Buffer Overflow (XXXX patterns)<br>• SSH Brute Force (Failed password)<br>• Directory Traversal<br><br><strong>📊 Visualisation des données</strong><br>Graphiques Matplotlib embarqués dans Tkinter (FigureCanvasTkAgg) pour visualiser la répartition des protocoles et les alertes de sécurité.<br><br><strong>📁 Fichier analysé</strong><br>Capture réseau réelle de l IUT de Roanne : trames ARP, DNS, UDP, STP 802.1w, HSRP, NetBIOS, requêtes PTR.",
+      [
+        { src: "./assets/images/net1.jpg", caption: "Analyse de Trames Réseau" },
+        { src: "./assets/images/net2.webp", caption: "Détection d attaques & Sécurité" },
+
+      ],
+      "Python, Tkinter, Matplotlib, Regex, Wireshark, ARP, DNS, TCP/IP, Cybersécurité"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="shield-outline"></ion-icon></div>
+        <img src="./assets/images/net1.jpg" alt="NetSpector Analyseur Réseau" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">NetSpector — Analyseur Réseau</h3>
+      <p class="project-category">Projet Cyber · Python</p>
+    </div>
+  </li>
+
+  <!-- APP FOR FOREIGNERS -->
+  <li class="project-item active" data-filter-item data-category="projects">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "App for Foreigners — Application Étudiants Internationaux",
+      "Conception complète d une <strong>application mobile/web pour étudiants étrangers</strong> à l IUT de Roanne, facilitant leur intégration et leur vie quotidienne en France.<br><br><strong>🎯 Concept & Objectif</strong><br>Application pensée pour le persona <em>Emily</em> (20 ans, Espagne) : connecter les étudiants étrangers, centraliser les infos pratiques (transports, logement, événements) et gamifier l intégration via QR Codes et collecte de XP.<br><br><strong>📱 Fonctionnalités clés</strong><br>• Inscription/Login (Email + Google Account)<br>• Carte interactive de Saint-Étienne (transports, arrêts bus/tram, services)<br>• Chat communautaire par groupes et système Mentor/Buddy<br>• Calendrier d événements culturels avec favoris<br>• Checklist d arrivée (avant/pendant le séjour)<br>• Infos administratives (résidence, banque, sécu sociale)<br>• Gamification : QR Codes à scanner, collecte de XP, score<br><br><strong>🎨 Design & Architecture</strong><br>Moodboard vert/blanc, style flat design, typographie moderne sans-serif. Architecture React.js (Vite) + Tailwind CSS, backend Firebase (Firestore, Auth, Storage), hébergement OVH.",
+      [
+        { src: "./assets/images/app1.jpg", caption: "Moodboard & Design App" },
+        { src: "./assets/images/app2.png", caption: "Architecture React.js + Firebase" },
+        
+      ],
+      "React.js, Vite, Tailwind CSS, Firebase, Firestore, UX/UI, Mobile App, Figma"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="earth-outline"></ion-icon></div>
+        <img src="./assets/images/app1.jpg" alt="App for Foreigners" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">App for Foreigners</h3>
+      <p class="project-category">Projet · React & Firebase</p>
+    </div>
+  </li>
+
+  <!-- ARDUINO FRELON -->
+  <li class="project-item active" data-filter-item data-category="projects">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SAÉ 2.02 — Détecteur de Frelon Asiatique (Arduino)",
+      "Conception et programmation d un <strong>détecteur de fréquence acoustique</strong> sur carte Arduino, capable d identifier le battement d ailes du frelon asiatique à <strong>160 Hz</strong>.<br><br><strong>🎛️ Capteur & Filtrage</strong><br>Utilisation d un capteur Grove Sound Sensor (bande passante 16-20 kHz, SNR 54 dB, 25mW). Implémentation de filtres numériques :<br>• <strong>Filtre passe-bas</strong> (α = 0.386, fc = 100 Hz) : s(k) = 0.386·e(k) + 0.614·s(k-1)<br>• <strong>Filtre passe-haut</strong> (fc = 140 Hz)<br>• <strong>Filtre passe-bande</strong> 140–180 Hz centré sur 160 Hz<br><br><strong>🔍 Détection & Initiatives personnelles</strong><br>• Visualisation ASCII en temps réel dans le moniteur série (barres d étoiles)<br>• Seuil de détection calibré à 400 (validé avec générateur 160 Hz)<br>• LED verte = aucun frelon détecté<br>• LED rouge + alarme sonore = frelon détecté<br><br><strong>⚙️ Concepts mathématiques</strong><br>Démonstration du filtre numérique, calcul de α = Te/(Te+τ), justification des fréquences de coupure.",
+      [
+        { src: "./assets/images/arduino-frelon-preview.jpg", caption: "Montage Arduino & Capteur Son" },
+        { src: "./assets/images/ard1.jpg", caption: "Circuit Arduino Uno" },
+        { src: "./assets/images/ard2.jpg", caption: "Détection LED & Signal" }
+      ],
+      "Arduino, C++, Filtres Numériques, Traitement du Signal, Grove Sensor, LED, IIR"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="bug-outline"></ion-icon></div>
+        <img src="./assets/images/arduino-frelon-preview.jpg" alt="Détecteur Frelon Arduino" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">Détecteur Frelon Asiatique</h3>
+      <p class="project-category">Projet · Arduino & Signal</p>
+    </div>
+  </li>
+
+  <!-- WORDPRESS DOCKER -->
+  <li class="project-item active" data-filter-item data-category="systems">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "SAÉ 2.03 — Environnement WordPress sous Docker",
+      "Déploiement complet d un <strong>environnement WordPress conteneurisé</strong> avec Docker, incluant base de données, interface d administration et automatisation par scripts.<br><br><strong>🐳 Stack Docker</strong><br>Déploiement via <strong>docker-compose</strong> de 3 services interconnectés sur un réseau bridge dédié (SAE203-abdou) :<br>• <strong>WordPress</strong> (port 80) avec persistance des fichiers<br>• <strong>MariaDB</strong> avec persistance des données BDD<br>• <strong>phpMyAdmin</strong> (port 8080) pour l administration SQL<br><br><strong>⚙️ Configuration réseau Docker</strong><br>Création d un réseau isolé permettant la communication entre conteneurs par nom symbolique (sans IP). Vérification des connexions inter-conteneurs, installation de outils de diagnostic (iputils-ping).<br><br><strong>💾 Sauvegarde automatisée (PowerShell)</strong><br>Script PS1 de sauvegarde complète : copie du script, du dossier WordPress et de la BDD MariaDB, puis compression automatique en ZIP horodaté.",
+      [
+        { src: "./assets/images/wp1.jpg", caption: "Dashboard WordPress" },
+        { src: "./assets/images/wp2.jpg", caption: "Interface phpMyAdmin" },
+        
+        
+      ],
+      "Docker, Docker-Compose, WordPress, MariaDB, phpMyAdmin, PowerShell, Symfony, Linux"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="logo-wordpress"></ion-icon></div>
+        <img src="./assets/images/wp1.jpg" alt="WordPress Docker" loading="lazy" onerror="this.style.display='none'">
+      </figure>
+      <h3 class="project-title">WordPress & Docker</h3>
+      <p class="project-category">Projet Systèmes · DevOps</p>
+    </div>
+  </li>
+
+  <!-- CERTIFICAT DOTCOM -->
+  <li class="project-item active" data-filter-item data-category="certifications">
+    <div class="project-link" style="cursor:pointer;" role="button" tabindex="0" onclick='showProjectDetailCarousel(
+      "Certificat Dotcom - Développement & Algorithmique",
+      "Certification validant des compétences avancées en Python, maîtrise des algorithmes complexes et conception d interfaces graphiques avec Qt Designer.",
+      [
+        { src: "./assets/images/dotcom-cert.png", caption: "Certificat Dotcom" },
+        
+      ],
+      "Python, Algorithmique, Qt Designer"
+    )'>
+      <figure class="project-img">
+        <div class="project-item-icon-box"><ion-icon name="code-slash-outline"></ion-icon></div>
+        <img src="./assets/images/dotcom-cert.png" alt="Certificat Dotcom" loading="lazy">
+      </figure>
+      <h3 class="project-title">Certificat Dotcom</h3>
+      <p class="project-category" data-i18n="portfolio.filter.certs">Certification</p>
+    </div>
+  </li>
+
+</ul>
+          </section>
+        </div>
+
+        <div id="project-detail-view" class="project-detail" style="display: none;">
+          <button class="back-btn" onclick="hideProjectDetail()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            <span data-i18n="portfolio.back">Retour</span>
+          </button>
+
+          <div class="detail-media-wrapper">
+            <img src="" id="detail-img" alt="Illustration">
+            <video id="detail-video" controls style="display:none; width:100%; border-radius:15px;"></video>
+            <div id="detail-carousel" style="display:none;">
+              <div class="carousel-track-wrapper">
+                <img id="carousel-img" src="" alt="" class="carousel-main-img">
+              </div>
+              <p id="carousel-caption" class="carousel-caption"></p>
+              <div class="carousel-controls">
+                <button class="carousel-btn" id="carousel-prev">&#8592;</button>
+                <span id="carousel-counter" class="carousel-counter">1 / 1</span>
+                <button class="carousel-btn" id="carousel-next">&#8594;</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-text-wrapper">
+            <h3 class="h3" id="detail-title"></h3>
+            <p class="detail-tags" id="detail-tech"></p>
+            <div class="detail-description" id="detail-desc"></div>
+
+            <a href="" id="detail-link" target="_blank" class="download-btn" style="display:none;">
+              <ion-icon name="download-outline"></ion-icon>
+              <span>Télécharger / Voir le projet</span>
+            </a>
+          </div>
+        </div>
+
+    </article>
+
+    <article class="blog" data-page="blog">
+
+      <header>
+        <h2 class="h2 article-title" data-i18n="blog.title">Blog & Astuces</h2>
+      </header>
+
+      <div id="blog-grid-view">
+        <section class="blog-posts">
+          <ul class="blog-posts-list">
+
+            <li class="blog-post-item">
+              <div class="blog-link" onclick="showBlogDetail(
+            'L\'astuce ultime pour trouver une alternance sur LinkedIn', 
+            './assets/images/astuce-linkedin.png', 
+            'Suite à plusieurs recherches d’alternance, je voulais partager avec vous une petite astuce que peu de gens connaissent.<br><br>Quand vous cherchez un emploi ou une alternance sur LinkedIn, regardez l’URL tout en haut du navigateur. Vous verrez un bout de texte comme ceci : <b>TPR=r86400</b>.<br><br>Ce code indique le délai de publication des offres :<br>• <b>r86400</b> → dernières 24 heures<br>• <b>r604800</b> → 7 derniers jours<br>• <b>r3600</b> → 1 heure seulement 😎<br><br>En changeant manuellement cette valeur dans votre barre d\'adresse, vous pouvez afficher les offres les plus récentes avant tout le monde et être le premier à postuler !', 
+            'LinkedIn, Recherche d\'emploi, Astuce'
+          )">
+                <figure class="blog-banner-box">
+                  <img src="./assets/images/astuce-linkedin.png" alt="Astuce LinkedIn" loading="lazy">
+                </figure>
+                <div class="blog-content">
+                  <div class="blog-meta">
+                    <p class="blog-category">Carrière</p>
+                    <span class="dot"></span>
+                    <time datetime="2026-02-13">13 Fév, 2026</time>
+                  </div>
+                  <h3 class="h3 blog-item-title">Optimiser sa recherche d'alternance via l'URL LinkedIn</h3>
+                  <p class="blog-text">Découvrez comment hacker l'URL de LinkedIn pour voir les offres publiées il y a
+                    moins d'une heure...</p>
+                </div>
+              </div>
+            </li>
+            <li class="blog-post-item">
+              <div class="blog-link" onclick="showBlogDetail(
+            'OS Fingerprinting : Ce que le TTL révèle de vos cibles', 
+            './assets/images/ttl-explainer.png', 
+            '🚀 Un simple TTL peut révéler bien plus que ce qu’on imagine !<br><br>En travaillant sur mes projets, j’ai remarqué un détail qu’on ignore souvent : le <b>TTL (Time To Live)</b>.<br><br>Chaque système d’exploitation commence avec une valeur différente :<br>• <b>Windows</b> → 128<br>• <b>Linux/Debian</b> → 64<br>• <b>Routeurs Cisco</b> → 255<br><br>En regardant le TTL reçu, on peut deviner le type de machine et sa distance !<br><br>🔎 <b>Exemple d\'interprétation :</b><br>Si je reçois un paquet avec <b>TTL=117</b>, il vient probablement de Windows (128 - 117 = 11 sauts).<br>Si je reçois <b>TTL=57</b>, c’est un Linux (64 - 57 = 7 sauts).', 
+            'Réseaux, Cybersécurité, Pentest',
+            true // On ajoute un paramètre pour dire qu'il y a une galerie d'images
+          )">
+                <figure class="blog-banner-box">
+                  <img src="./assets/images/image-base.png" alt="TTL Networking" loading="lazy">
+                </figure>
+                <div class="blog-content">
+                  <div class="blog-meta">
+                    <p class="blog-category">Cybersécurité</p>
+                    <span class="dot"></span>
+                    <time datetime="2026-02-13">13 Fév, 2026</time>
+                  </div>
+                  <h3 class="h3 blog-item-title">Le TTL : La carte d'identité cachée des systèmes</h3>
+                  <p class="blog-text">Découvrez comment identifier un OS (Windows, Linux, Cisco) simplement avec une
+                    commande Ping...</p>
+                </div>
+              </div>
+            </li>
+
+          </ul>
+        </section>
+      </div>
+
+<div id="blog-detail-view" class="project-detail" style="display: none;">
+  <button class="back-btn" onclick="hideBlogDetail()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+    <span>Retour au blog</span>
+  </button>
+  <div class="detail-content">
+    <div class="detail-media-wrapper">
+      <img src="" id="blog-detail-img" alt="Illustration">
+      <video id="blog-detail-video" controls style="display:none; width:100%; border-radius:15px;"></video>
+      <div id="blog-detail-carousel" style="display:none;">
+        <div class="carousel-track-wrapper">
+          <img id="blog-carousel-img" src="" alt="" class="carousel-main-img">
+        </div>
+        <p id="blog-carousel-caption" class="carousel-caption"></p>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="blog-carousel-prev">&#8592;</button>
+          <span id="blog-carousel-counter" class="carousel-counter">1 / 1</span>
+          <button class="carousel-btn" id="blog-carousel-next">&#8594;</button>
+        </div>
+      </div>
+    </div>
+    <div class="detail-text-wrapper">
+      <h3 class="h3" id="blog-detail-title"></h3>
+      <p class="detail-tags" id="blog-detail-tags"></p>
+      <div class="detail-description" id="blog-detail-desc"></div>
+    </div>
+  </div>
+</div>
+</article>
+    <article class="contact" data-page="contact">
+      <header>
+        <h2 class="h2 article-title" data-i18n="contact.title"></h2>
+      </header>
+
+      <section class="mapbox" data-mapbox>
+        <figure>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2777.2023023014!2d4.0664!3d46.0367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f3ec38f6966671%3A0x7d00f35496660662!2sIUT%20de%20Roanne!5e0!3m2!1sfr!2sfr!4v1710000000000"
+            width="100%" height="400" loading="lazy"
+            style="border:0; filter: grayscale(1) invert(1) opacity(0.8); border-radius: 20px;">
+          </iframe>
+        </figure>
+      </section>
+
+      <section class="contact-form">
+        <h3 class="h3 form-title" data-i18n="contact.formTitle"></h3>
+
+        <form action="#" class="form" data-form id="contact-form">
+          <div class="input-wrapper">
+            <input type="text" name="fullname" class="form-input" data-i18n-placeholder="contact.phName" required
+              data-form-input>
+            <input type="email" name="email" class="form-input" data-i18n-placeholder="contact.phEmail" required
+              data-form-input>
+          </div>
+          <textarea name="message" class="form-input" data-i18n-placeholder="contact.phMessage" required
+            data-form-input></textarea>
+          <p id="form-status"
+            style="display:none; color: var(--orange-yellow-crayola); margin-bottom: 20px; font-size: 14px;"></p>
+          <button class="form-btn" type="submit" disabled data-form-btn>
+            <ion-icon name="paper-plane"></ion-icon>
+            <span data-i18n="contact.sendBtn"></span>
+          </button>
+        </form>
+      </section>
+      <section class="rating-section">
+  <h3 class="h3 form-title">Évaluer ce portfolio ⭐</h3>
+  <div class="rating-widget">
+    <div class="stars-container">
+      <button class="star-btn" onclick="submitRating(1)">★</button>
+      <button class="star-btn" onclick="submitRating(2)">★</button>
+      <button class="star-btn" onclick="submitRating(3)">★</button>
+      <button class="star-btn" onclick="submitRating(4)">★</button>
+      <button class="star-btn" onclick="submitRating(5)">★</button>
+    </div>
+    <p class="rating-stats">
+      Note moyenne : <span id="rating-avg">--</span> ⭐
+      (<span id="rating-count">0</span> votes)
+    </p>
+    <p id="rating-msg" class="rating-msg"></p>
+  </div>
+</section>
+    </article>
+
+    </div>
+  </main>
+
+  <script src="./assets/js/i18n.js"></script>
+  <script src="./assets/js/script.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>
