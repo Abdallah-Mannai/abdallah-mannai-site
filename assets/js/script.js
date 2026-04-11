@@ -368,8 +368,16 @@ window.hideBlogDetail = function() {
 }
 
 /**
- * FORMULAIRE DE CONTACT
+ * FORMULAIRE DE CONTACT - EmailJS
  */
+// Charger EmailJS
+const emailjsScript = document.createElement('script');
+emailjsScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+emailjsScript.onload = function() {
+  emailjs.init('mXcdCxAf1AFQvh_ob');
+};
+document.head.appendChild(emailjsScript);
+
 const contactForm = document.querySelector("#contact-form");
 const formInputs = document.querySelectorAll("[data-form-input]");
 const formBtn = document.querySelector("[data-form-btn]");
@@ -388,23 +396,39 @@ if (contactForm) {
   contactForm.addEventListener("submit", function (e) {
     e.preventDefault();
     const status = document.getElementById("form-status");
-    
+
     formBtn.setAttribute("disabled", "");
     const originalBtnHTML = formBtn.innerHTML;
     formBtn.innerHTML = `<ion-icon name="sync-outline" class="rotate"></ion-icon> <span>Envoi...</span>`;
 
-    setTimeout(() => {
-      if (status) {
-        status.style.display = "block";
-        status.innerText = "Merci ! Message bien reçu.";
-      }
-      contactForm.reset();
-      formBtn.innerHTML = originalBtnHTML;
-      formBtn.setAttribute("disabled", "");
-    }, 2000);
+    const templateParams = {
+      from_name: contactForm.querySelector('[name="fullname"]').value,
+      from_email: contactForm.querySelector('[name="email"]').value,
+      message: contactForm.querySelector('[name="message"]').value
+    };
+
+    emailjs.send('service_7oadz5h', 'template_anfzgzx', templateParams)
+      .then(function() {
+        if (status) {
+          status.style.display = "block";
+          status.innerText = "Merci ! Message bien reçu. 🎉";
+        }
+        contactForm.reset();
+        formBtn.innerHTML = originalBtnHTML;
+        formBtn.setAttribute("disabled", "");
+      })
+      .catch(function(error) {
+        if (status) {
+          status.style.display = "block";
+          status.innerText = "Erreur d'envoi. Réessayez.";
+          status.style.color = "red";
+        }
+        formBtn.innerHTML = originalBtnHTML;
+        formBtn.removeAttribute("disabled");
+        console.error('EmailJS error:', error);
+      });
   });
 }
-
 /**
  * THEME DARK / LIGHT
  */
