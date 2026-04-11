@@ -232,11 +232,11 @@ window.hideProjectDetail = function() {
 /**
  * GESTION DÉTAIL BLOG
  */
-window.showBlogDetail = function(title, img, desc, tags, hasGallery = false) {
+window.showBlogDetail = function(title, img, desc, tags, hasGallery = false, photos = []) {
   const gridView = document.getElementById('blog-grid-view');
   const detailView = document.getElementById('blog-detail-view');
   const imgElement = document.getElementById('blog-detail-img');
-  const galleryElement = document.getElementById('ping-gallery');
+  const carouselElement = document.getElementById('blog-detail-carousel');
 
   if (!gridView || !detailView) return;
 
@@ -244,11 +244,113 @@ window.showBlogDetail = function(title, img, desc, tags, hasGallery = false) {
   document.getElementById('blog-detail-desc').innerHTML = desc;
   document.getElementById('blog-detail-tags').innerText = "Tags : " + tags;
 
-  if (hasGallery && galleryElement) {
+  if (photos && photos.length > 0) {
+    // Mode carousel avec 3 images côte à côte
     imgElement.style.display = 'none';
-    galleryElement.style.display = 'block';
+    carouselElement.style.display = 'none';
+
+    // Créer ou réutiliser le bloc galerie
+    let gallery = document.getElementById('blog-photo-gallery');
+    if (!gallery) {
+      gallery = document.createElement('div');
+      gallery.id = 'blog-photo-gallery';
+      imgElement.parentNode.insertBefore(gallery, imgElement);
+    }
+
+    gallery.innerHTML = '';
+    gallery.style.cssText = `
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+    `;
+
+    photos.forEach(photo => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = `
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--jet);
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      `;
+
+      const img = document.createElement('img');
+      img.src = photo.src;
+      img.alt = photo.caption;
+      img.style.cssText = `
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.3s ease;
+      `;
+
+      const caption = document.createElement('p');
+      caption.textContent = photo.caption;
+      caption.style.cssText = `
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.75);
+        color: var(--orange-yellow-crayola);
+        font-size: 11px;
+        text-align: center;
+        padding: 6px;
+        margin: 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      `;
+
+      wrapper.addEventListener('mouseenter', () => {
+        img.style.transform = 'scale(1.08)';
+        caption.style.transform = 'translateY(0)';
+        wrapper.style.boxShadow = '0 0 15px hsla(45, 100%, 72%, 0.3)';
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        img.style.transform = 'scale(1)';
+        caption.style.transform = 'translateY(100%)';
+        wrapper.style.boxShadow = 'none';
+      });
+
+      // Clic pour agrandir
+      wrapper.addEventListener('click', () => {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.9);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        `;
+        const bigImg = document.createElement('img');
+        bigImg.src = photo.src;
+        bigImg.style.cssText = `
+          max-width: 90vw;
+          max-height: 90vh;
+          border-radius: 12px;
+          object-fit: contain;
+        `;
+        modal.appendChild(bigImg);
+        modal.addEventListener('click', () => modal.remove());
+        document.body.appendChild(modal);
+      });
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(caption);
+      gallery.appendChild(wrapper);
+    });
+
   } else {
-    if (galleryElement) galleryElement.style.display = 'none';
+    // Mode image simple
+    let gallery = document.getElementById('blog-photo-gallery');
+    if (gallery) gallery.style.display = 'none';
     imgElement.style.display = 'block';
     imgElement.src = img;
   }
@@ -259,6 +361,8 @@ window.showBlogDetail = function(title, img, desc, tags, hasGallery = false) {
 }
 
 window.hideBlogDetail = function() {
+  const gallery = document.getElementById('blog-photo-gallery');
+  if (gallery) gallery.remove();
   document.getElementById('blog-grid-view').style.display = 'block';
   document.getElementById('blog-detail-view').style.display = 'none';
 }
