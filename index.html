@@ -907,16 +907,26 @@
           </button>
         </form>
       </section>
-      <section class="rating-section">
+     <section class="rating-section">
   <h3 class="h3 form-title">Évaluer ce portfolio ⭐</h3>
-  <div class="rating-stats">
-  <span>Note moyenne :</span>
-  <strong><span id="rating-avg">--</span></strong>
-  <span>⭐</span>
-  <span>|</span>
-  <span id="rating-count">0</span>
-  <span>votes</span>
-</div>
+  <div class="rating-widget">
+    <div class="stars-container">
+      <button class="star-btn" onclick="submitRating(1)">★</button>
+      <button class="star-btn" onclick="submitRating(2)">★</button>
+      <button class="star-btn" onclick="submitRating(3)">★</button>
+      <button class="star-btn" onclick="submitRating(4)">★</button>
+      <button class="star-btn" onclick="submitRating(5)">★</button>
+    </div>
+    <div class="rating-stats">
+      <span>Note moyenne :</span>
+      <strong><span id="rating-avg">--</span></strong>
+      <span>⭐</span>
+      <span>|</span>
+      <span id="rating-count">0</span>
+      <span>votes</span>
+    </div>
+    <p id="rating-msg" class="rating-msg"></p>
+  </div>
 </section>
     </article>
 
