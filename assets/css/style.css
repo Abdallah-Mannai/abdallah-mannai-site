@@ -985,11 +985,7 @@ body::before {
   transform: scale(1.2);
 }
 
-.rating-stats {
-  color: var(--white-2);
-  font-size: var(--fs-5);
-  font-weight: var(--fw-500);
-}
+
 
 .rating-msg {
   color: var(--orange-yellow-crayola);
