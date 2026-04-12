@@ -996,3 +996,16 @@ body::before {
   font-size: var(--fs-6);
   min-height: 20px;
 }
+.rating-stats {
+  color: var(--white-2);
+  font-size: var(--fs-5);
+  font-weight: var(--fw-400);
+  text-align: center;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.rating-stats strong {
+  color: var(--orange-yellow-crayola);
+  font-size: var(--fs-3);
+}
