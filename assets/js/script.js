@@ -1,4 +1,5 @@
 'use strict';
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore.js";
 
 /**
  * UTILS
