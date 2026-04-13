@@ -891,21 +891,24 @@
         <h3 class="h3 form-title" data-i18n="contact.formTitle"></h3>
 
         <form action="#" class="form" data-form id="contact-form">
-          <div class="input-wrapper">
-            <input type="text" name="fullname" class="form-input" data-i18n-placeholder="contact.phName" required
-              data-form-input>
-            <input type="email" name="email" class="form-input" data-i18n-placeholder="contact.phEmail" required
-              data-form-input>
-          </div>
-          <textarea name="message" class="form-input" data-i18n-placeholder="contact.phMessage" required
-            data-form-input></textarea>
-          <p id="form-status"
-            style="display:none; color: var(--orange-yellow-crayola); margin-bottom: 20px; font-size: 14px;"></p>
-          <button class="form-btn" type="submit" disabled data-form-btn>
-            <ion-icon name="paper-plane"></ion-icon>
-            <span data-i18n="contact.sendBtn"></span>
-          </button>
-        </form>
+  <div class="input-wrapper">
+    <input type="text" name="fullname" class="form-input" data-i18n-placeholder="contact.phName" required data-form-input>
+    <input type="email" name="email" class="form-input" data-i18n-placeholder="contact.phEmail" required data-form-input>
+  </div>
+  
+  <div style="opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1;">
+    <input type="text" name="user_zip_code" id="user_zip_code" tabindex="-1" autocomplete="off">
+  </div>
+
+  <textarea name="message" class="form-input" data-i18n-placeholder="contact.phMessage" required data-form-input></textarea>
+  
+  <p id="form-status" style="display:none; color: var(--orange-yellow-crayola); margin-bottom: 20px; font-size: 14px;"></p>
+  
+  <button class="form-btn" type="submit" disabled data-form-btn>
+    <ion-icon name="paper-plane"></ion-icon>
+    <span data-i18n="contact.sendBtn"></span>
+  </button>
+</form>
       </section>
      <section class="rating-section">
   <h3 class="h3 form-title">Évaluer ce portfolio ⭐</h3>
