@@ -368,7 +368,7 @@ window.hideBlogDetail = function() {
 }
 
 /**
- * FORMULAIRE DE CONTACT - EmailJS
+ * FORMULAIRE DE CONTACT - Sécurisé
  */
 const contactForm = document.querySelector("#contact-form");
 const formInputs = document.querySelectorAll("[data-form-input]");
@@ -387,8 +387,16 @@ if (contactForm) {
 
   contactForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    const status = document.getElementById("form-status");
+    
+    // 1. VERIFICATION HONEYPOT
+    const botTrap = document.getElementById("user_zip_code").value;
+    if (botTrap !== "") {
+      console.warn("Spam détecté.");
+      contactForm.reset();
+      return; // On arrête tout sans rien envoyer
+    }
 
+    const status = document.getElementById("form-status");
     formBtn.setAttribute("disabled", "");
     const originalBtnHTML = formBtn.innerHTML;
     formBtn.innerHTML = `<ion-icon name="sync-outline" class="rotate"></ion-icon> <span>Envoi...</span>`;
@@ -410,12 +418,11 @@ if (contactForm) {
     .catch(function(error) {
       if (status) {
         status.style.display = "block";
-        status.innerText = "Erreur d'envoi. Réessayez.";
+        status.innerText = "Erreur d'envoi.";
         status.style.color = "red";
       }
       formBtn.innerHTML = originalBtnHTML;
       formBtn.removeAttribute("disabled");
-      console.error('EmailJS error:', error);
     });
   });
 }
