@@ -5,6 +5,7 @@
 
 
 <head>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-07048TH3TP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -926,6 +927,7 @@ const pageLoadTime = Date.now();
   <textarea name="message" class="form-input" data-i18n-placeholder="contact.phMessage" required data-form-input></textarea>
   
   <p id="form-status" style="display:none; color: var(--orange-yellow-crayola); margin-bottom: 20px; font-size: 14px;"></p>
+  <div class="g-recaptcha" data-sitekey="6LfGk7UsAAAAAEv9x469y4TtqkmLt_bpbFFJf7U-" style="margin-bottom: 20px;"></div>
   
   <button class="form-btn" type="submit" disabled data-form-btn>
     <ion-icon name="paper-plane"></ion-icon>
