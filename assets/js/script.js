@@ -368,12 +368,13 @@ window.hideBlogDetail = function() {
   document.getElementById('blog-detail-view').style.display = 'none';
 }
 
-/**
- * FORMULAIRE DE CONTACT - Sécurisé
- */
 const contactForm = document.querySelector("#contact-form");
 const formInputs = document.querySelectorAll("[data-form-input]");
 const formBtn = document.querySelector("[data-form-btn]");
+
+// Anti-spam : timestamp du chargement de la page
+const pageLoadTime = Date.now();
+let lastSubmitTime = 0;
 
 if (contactForm) {
   formInputs.forEach(input => {
@@ -388,13 +389,34 @@ if (contactForm) {
 
   contactForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    
-    // 1. VERIFICATION HONEYPOT
-    const botTrap = document.getElementById("user_zip_code").value;
-    if (botTrap !== "") {
-      console.warn("Spam détecté.");
+
+    // 1. Honeypot
+    const botTrap = document.getElementById("user_zip_code");
+    if (botTrap && botTrap.value !== "") {
       contactForm.reset();
-      return; // On arrête tout sans rien envoyer
+      return;
+    }
+
+    // 2. Temps minimum sur la page (5 secondes)
+    if (Date.now() - pageLoadTime < 5000) {
+      document.getElementById("form-status").style.display = "block";
+      document.getElementById("form-status").innerText = "Veuillez patienter quelques secondes.";
+      return;
+    }
+
+    // 3. Anti-double envoi (30 secondes entre chaque envoi)
+    if (Date.now() - lastSubmitTime < 30000) {
+      document.getElementById("form-status").style.display = "block";
+      document.getElementById("form-status").innerText = "Veuillez attendre 30 secondes avant de renvoyer.";
+      return;
+    }
+
+    // 4. Longueur minimale du message
+    const message = contactForm.querySelector('[name="message"]').value;
+    if (message.length < 10) {
+      document.getElementById("form-status").style.display = "block";
+      document.getElementById("form-status").innerText = "Message trop court.";
+      return;
     }
 
     const status = document.getElementById("form-status");
@@ -405,9 +427,10 @@ if (contactForm) {
     emailjs.send('service_7oadz5h', 'template_anfzgzx', {
       from_name: contactForm.querySelector('[name="fullname"]').value,
       from_email: contactForm.querySelector('[name="email"]').value,
-      message: contactForm.querySelector('[name="message"]').value
+      message: message
     })
     .then(function() {
+      lastSubmitTime = Date.now();
       if (status) {
         status.style.display = "block";
         status.innerText = "Merci ! Message bien reçu. 🎉";
@@ -419,7 +442,7 @@ if (contactForm) {
     .catch(function(error) {
       if (status) {
         status.style.display = "block";
-        status.innerText = "Erreur d'envoi.";
+        status.innerText = "Erreur d'envoi. Réessayez.";
         status.style.color = "red";
       }
       formBtn.innerHTML = originalBtnHTML;
