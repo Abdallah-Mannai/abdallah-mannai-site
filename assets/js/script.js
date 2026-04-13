@@ -423,6 +423,15 @@ if (contactForm) {
     formBtn.setAttribute("disabled", "");
     const originalBtnHTML = formBtn.innerHTML;
     formBtn.innerHTML = `<ion-icon name="sync-outline" class="rotate"></ion-icon> <span>Envoi...</span>`;
+    // Vérification reCAPTCHA
+const recaptchaResponse = grecaptcha.getResponse();
+if (!recaptchaResponse) {
+  status.style.display = "block";
+  status.innerText = "Veuillez cocher le reCAPTCHA.";
+  formBtn.innerHTML = originalBtnHTML;
+  formBtn.removeAttribute("disabled");
+  return;
+}
 
     emailjs.send('service_7oadz5h', 'template_anfzgzx', {
       from_name: contactForm.querySelector('[name="fullname"]').value,
