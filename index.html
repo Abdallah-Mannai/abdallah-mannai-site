@@ -89,27 +89,45 @@
   }
 
   window.submitRating = async function(stars) {
-    if (localStorage.getItem("hasVoted")) {
-      document.getElementById("rating-msg").textContent = "Vous avez déjà voté ! Merci 😊";
-      return;
-    }
-    try {
-      const ref = doc(db, "siteStats", "rating");
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        await updateDoc(ref, { total: increment(stars), count: increment(1) });
-      } else {
-        await setDoc(ref, { total: stars, count: 1 });
-      }
-      localStorage.setItem("hasVoted", "true");
-      localStorage.setItem("myVote", stars);
-      document.getElementById("rating-msg").textContent = `Merci pour votre ${stars}⭐ !`;
-      highlightStars(stars);
-      loadRating();
-    } catch(e) {
-      document.getElementById("rating-msg").textContent = "Erreur, réessayez.";
-    }
+  // Vérif localStorage
+  if (localStorage.getItem("hasVoted")) {
+    document.getElementById("rating-msg").textContent = "Vous avez déjà voté ! Merci 😊";
+    return;
   }
+
+  // Vérif valeur étoile
+  if (stars < 1 || stars > 5 || !Number.isInteger(stars)) {
+    return;
+  }
+
+  // Anti-spam timing (5 secondes minimum sur la page)
+  if (Date.now() - pageLoadTime < 5000) {
+    document.getElementById("rating-msg").textContent = "Attendez quelques secondes avant de voter.";
+    return;
+  }
+
+  try {
+    const ref = doc(db, "siteStats", "rating");
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      await updateDoc(ref, {
+        total: increment(stars),
+        count: increment(1)
+      });
+    } else {
+      await setDoc(ref, { total: stars, count: 1 });
+    }
+    localStorage.setItem("hasVoted", "true");
+    localStorage.setItem("myVote", stars);
+    document.getElementById("rating-msg").textContent = `Merci pour votre ${stars}⭐ !`;
+    highlightStars(stars);
+    loadRating();
+  } catch(e) {
+    document.getElementById("rating-msg").textContent = "Erreur, réessayez.";
+  }
+}
+
+const pageLoadTime = Date.now();
 
   function highlightStars(n) {
     document.querySelectorAll(".star-btn").forEach((s, i) => {
