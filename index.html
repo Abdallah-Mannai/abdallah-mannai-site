@@ -747,5 +747,19 @@
   <script src="./assets/js/script.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+  <script>
+function handleFormSubmit(e) {
+  const botTrap = document.getElementById("user_zip_code");
+  if (botTrap && botTrap.value !== "") { e.preventDefault(); return; }
+  const recaptchaResponse = grecaptcha.getResponse();
+  if (!recaptchaResponse) {
+    e.preventDefault();
+    document.getElementById("form-status").style.display = "block";
+    document.getElementById("form-status").innerText = "Veuillez cocher le reCAPTCHA ✅";
+    return;
+  }
+}
+</script>
 </body>
 </html>
