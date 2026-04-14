@@ -697,7 +697,7 @@
         </section>
         <section class="contact-form">
           <h3 class="h3 form-title" data-i18n="contact.formTitle"></h3>
-          <form action="https://api.web3forms.com/submit" method="POST" id="contact-form" data-form>
+          <form action="https://api.web3forms.com/submit" method="POST" id="contact-form" data-form onsubmit="handleFormSubmit(event)">
             <input type="hidden" name="access_key" value="7e7956aa-abb9-4b01-bc71-db9960b28014">
             <input type="hidden" name="subject" value="Nouveau message - Portfolio Abdallah">
             <input type="checkbox" name="botcheck" style="display: none;">
